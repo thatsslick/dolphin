@@ -128,7 +128,17 @@ QStringList LuaScriptWindow::GetScriptList()
       continue;
     }
 
-    scripts.append(QString::fromStdString(child.virtualName));
+    const QString filename = QString::fromStdString(child.virtualName);
+
+    // Assert that this is a .lua file
+    QString suffix = QFileInfo(filename).suffix();
+
+    if (suffix != tr("lua"))
+    {
+      continue;
+    }
+
+    scripts.append(filename);
   }
 
   return scripts;
