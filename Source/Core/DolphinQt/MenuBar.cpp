@@ -254,6 +254,7 @@ void MenuBar::AddToolsMenu()
       gc_ipl->addAction(tr("PAL"), this, [this] { emit BootGameCubeIPL(DiscIO::Region::PAL); });
 
   tools_menu->addAction(tr("Memory Card Manager"), this, [this] { emit ShowMemcardManager(); });
+  tools_menu->addAction(tr("Execute Lua Script"), this, [this] { emit ShowLuaScriptWindow(); });
 
   tools_menu->addSeparator();
 

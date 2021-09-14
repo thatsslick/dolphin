@@ -155,6 +155,7 @@ private:
   void ShowNetPlayBrowser();
   void ShowFIFOPlayer();
   void ShowMemcardManager();
+  void ShowLuaScriptWindow();
   void ShowResourcePackManager();
   void ShowCheatsManager();
 
