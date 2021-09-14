@@ -47,9 +47,6 @@ LuaScriptWindow::LuaScriptWindow(QWidget* parent) : QDialog(parent)
   // Set window dimensions
   resize(200, 100);
 
-  // Allow window to go out-of-focus
-  setModal(false);
-
   setWindowTitle(tr("Execute Lua Script"));
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 }
