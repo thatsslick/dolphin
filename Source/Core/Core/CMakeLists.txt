@@ -536,6 +536,8 @@ if(_M_X86)
     PowerPC/Jit64Common/TrampolineCache.cpp
     PowerPC/Jit64Common/TrampolineCache.h
     PowerPC/Jit64Common/TrampolineInfo.h
+    LUA/Lua.cpp
+    LUA/Lua.h
   )
 elseif(_M_ARM_64)
   target_sources(core PRIVATE
@@ -577,6 +579,7 @@ PUBLIC
   videonull
   videoogl
   videosoftware
+  lua
 
 PRIVATE
   fmt::fmt

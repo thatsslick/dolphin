@@ -25,6 +25,22 @@ void Statistics::SwapDL()
   std::swap(this_frame.num_bp_loads_in_dl, this_frame.num_bp_loads);
 }
 
+void Statistics::ClearLuaText()
+{
+	g_stats.statistics_text = "";
+}
+
+void Statistics::SetString(std::string text)
+{
+	g_stats.statistics_text = text;
+}
+
+std::string Statistics::ToLuaString()
+{
+	return g_stats.statistics_text;
+}
+
+
 void Statistics::Display() const
 {
   const float scale = ImGui::GetIO().DisplayFramebufferScale.x;

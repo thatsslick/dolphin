@@ -23,6 +23,10 @@ enum class RequestedAddressSpace
   Virtual,    // specifically want MMU turned on, fails if off
 };
 
+//Dragonbane
+std::string Read_String(const u32 startAddress, int count);
+void Write_String(const std::string text, const u32 startAddress);
+
 // Reads a value from emulated memory using the currently active MMU settings.
 // If the read fails (eg. address does not correspond to a mapped address in the current address
 // space), a PanicAlert will be shown to the user and zero (or an empty string for the string case)

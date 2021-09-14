@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <string>
 #include <array>
+
 
 struct Statistics
 {
@@ -21,6 +23,8 @@ struct Statistics
   std::array<float, 6> proj;
   std::array<float, 16> gproj;
   std::array<float, 16> g2proj;
+
+  std::string statistics_text;
 
   struct ThisFrame
   {
@@ -64,6 +68,11 @@ struct Statistics
   void SwapDL();
   void Display() const;
   void DisplayProj() const;
+
+  static void ClearLuaText();
+  static void SetString(std::string text);
+	static std::string ToLuaString();
+	static std::string ToStringProj();
 };
 
 extern Statistics g_stats;

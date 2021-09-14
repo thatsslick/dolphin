@@ -199,6 +199,7 @@ void CheckWiimoteStatus(int wiimote, const WiimoteCommon::DataReportBuilder& rpt
                         const WiimoteEmu::EncryptionKey& key);
 
 std::string GetInputDisplay();
+std::string GetRAMDisplay();
 std::string GetRTCDisplay();
 
 // Done this way to avoid mixing of core and gui code
