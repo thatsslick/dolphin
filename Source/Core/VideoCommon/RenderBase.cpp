@@ -547,7 +547,7 @@ void Renderer::DrawDebugText()
   }
 
   const bool show_movie_window =
-      config.m_ShowFrameCount | config.m_ShowLag | config.m_ShowInputDisplay | config.m_ShowRTC;
+      config.m_ShowFrameCount | config.m_ShowLag | config.m_ShowInputDisplay | config.m_ShowRTC | config.m_ShowRAMDisplay;
   if (show_movie_window)
   {
     // Position under the FPS display.
@@ -572,6 +572,8 @@ void Renderer::DrawDebugText()
         ImGui::Text("Lag: %" PRIu64 "\n", Movie::GetCurrentLagCount());
       if (SConfig::GetInstance().m_ShowInputDisplay)
         ImGui::TextUnformatted(Movie::GetInputDisplay().c_str());
+      if (SConfig::GetInstance().m_ShowRAMDisplay)
+        ImGui::TextUnformatted(Movie::GetRAMDisplay().c_str());
       if (SConfig::GetInstance().m_ShowRTC)
         ImGui::TextUnformatted(Movie::GetRTCDisplay().c_str());
     }

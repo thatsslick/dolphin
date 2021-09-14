@@ -781,6 +781,12 @@ void MenuBar::AddMovieMenu()
   connect(input_display, &QAction::toggled,
           [](bool value) { SConfig::GetInstance().m_ShowInputDisplay = value; });
 
+  auto* ram_display = movie_menu->addAction(tr("Show Info Display"));
+  ram_display->setCheckable(true);
+  ram_display->setChecked(SConfig::GetInstance().m_ShowRAMDisplay);
+  connect(ram_display, &QAction::toggled, 
+          [](bool value) { SConfig::GetInstance().m_ShowRAMDisplay = value; });
+
   auto* system_clock = movie_menu->addAction(tr("Show System Clock"));
   system_clock->setCheckable(true);
   system_clock->setChecked(SConfig::GetInstance().m_ShowRTC);

@@ -261,6 +261,7 @@ void SConfig::SaveMovieSettings(IniFile& ini)
   movie->Set("DumpFrames", m_DumpFrames);
   movie->Set("DumpFramesSilent", m_DumpFramesSilent);
   movie->Set("ShowInputDisplay", m_ShowInputDisplay);
+  movie->Set("ShowInfoDisplay", m_ShowRAMDisplay);
   movie->Set("ShowRTC", m_ShowRTC);
 }
 
@@ -531,6 +532,7 @@ void SConfig::LoadMovieSettings(IniFile& ini)
   movie->Get("DumpFrames", &m_DumpFrames, false);
   movie->Get("DumpFramesSilent", &m_DumpFramesSilent, false);
   movie->Get("ShowInputDisplay", &m_ShowInputDisplay, false);
+  movie->Get("ShowInfoDisplay", &m_ShowRAMDisplay);
   movie->Get("ShowRTC", &m_ShowRTC, false);
 }
 

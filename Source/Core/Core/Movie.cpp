@@ -40,6 +40,7 @@
 #include "Core/ConfigManager.h"
 #include "Core/Core.h"
 #include "Core/CoreTiming.h"
+#include "Core/LUA/Lua.h"
 #include "Core/DSP/DSPCore.h"
 #include "Core/HW/CPU.h"
 #include "Core/HW/DVD/DVDInterface.h"
@@ -56,6 +57,7 @@
 #include "Core/HW/WiimoteEmu/Extension/Classic.h"
 #include "Core/HW/WiimoteEmu/Extension/Nunchuk.h"
 #include "Core/HW/WiimoteEmu/ExtensionPort.h"
+#include "Core/PowerPC/MMU.h"
 
 #include "Core/IOS/USB/Bluetooth/BTEmu.h"
 #include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
@@ -188,6 +190,258 @@ std::string GetInputDisplay()
   }
   return input_display;
 }
+
+	std::string GetRAMDisplay()
+	{
+	    std::string RAMDisplay = "";
+
+		// Dragonbane
+	    std::string gameID = SConfig::GetInstance().GetGameID();
+	    std::string iniContent;
+
+	    bool success =
+	        File::ReadFileToString(File::GetSysDirectory() +  "/InfoDisplay/" + gameID + ".ini", iniContent);
+
+	    if (success)
+	    {
+		    int lineCounter = 0;
+		    bool inProgress = true;
+		    RAMDisplay.append("\n");
+
+		    while (inProgress)
+		    {
+			    lineCounter++;
+
+			    std::string lineName = StringFromFormat("Line%i", lineCounter);
+
+			    std::string::size_type loc = iniContent.find(lineName, 0);
+			    if (loc == std::string::npos)
+			    {
+				    inProgress = false;
+				    break;
+			    }
+
+			    iniContent = iniContent.substr(loc);
+			    iniContent = iniContent.substr(iniContent.find("\"", 0) + 1);
+
+			    std::string line = iniContent.substr(0, iniContent.find("\"", 0));
+			    std::string blockContent = iniContent.substr(0, iniContent.find("End Line", 0));
+
+			    std::string::size_type locNext = line.find("%", 0);
+			    std::string subLine = line;
+			    int argCounter = 0;
+
+			    while (locNext != std::string::npos)
+			    {
+				    argCounter++;
+
+				    std::string currSectionOutput = subLine.substr(0, locNext);
+				    subLine = subLine.substr(locNext + 1);
+				    std::string currIdenti = subLine.substr(0, 3);
+
+				    int numBytes = atoi(currIdenti.substr(1, 1).c_str());
+				    std::string identifier = "%" + currIdenti.substr(0, 1);
+				    u32 readAddress;
+
+				    subLine = subLine.substr(3);
+
+				    std::string nextArgName = StringFromFormat("Arg%i", argCounter);
+
+				    std::string::size_type locNextArg = blockContent.find(nextArgName, 0);
+
+				    if (locNextArg == std::string::npos)
+					    break;
+
+				    std::string argString = blockContent.substr(locNextArg);
+				    argString = argString.substr(argString.find("=", 0) + 1);
+				    argString = argString.substr(0, argString.find(";", 0));
+
+				    std::string::size_type locPlus = argString.find("+", 0);
+				    std::string::size_type locHint = argString.find(">>", 0);
+
+				    std::string currHint;
+
+				    if (locHint != std::string::npos)
+					    currHint = argString.substr(locHint + 3);
+
+				    if (locPlus == std::string::npos)
+				    {
+					    std::string arguString;
+
+					    if (locHint != std::string::npos)
+					    {
+						    arguString = argString.substr(0, locHint - 1);
+					    }
+					    else
+					    {
+						    arguString = argString;
+					    }
+
+					    readAddress = strtol(arguString.c_str(), nullptr, 16);
+				    }
+				    else
+				    {
+					    u32 pointerAddress;
+					    u32 offset;
+
+					    pointerAddress = strtol(argString.substr(0, locPlus - 1).c_str(), nullptr, 16);
+
+						std::string arguString = argString.substr(locPlus + 2);
+
+						if (locHint != std::string::npos)
+						{
+							locHint = arguString.find(">>", 0);
+
+							arguString = arguString.substr(0, locHint - 1);
+						}
+						
+						while (locPlus != std::string::npos)
+						{
+							offset = strtol(arguString.c_str(), nullptr, 16);
+							pointerAddress = Lua::readPointer(pointerAddress, offset);
+							locPlus = argString.find("+", locPlus + 1);
+							arguString = argString.substr(locPlus + 2);
+						}			    
+						
+						readAddress = pointerAddress;
+
+						if ((readAddress == 0) || (readAddress == offset))
+						{
+							RAMDisplay.append(currSectionOutput + "N/A");
+							locNext = subLine.find("%", 0);
+							continue;
+						}
+				    }
+									   					 				  
+
+
+				    std::string finalOutput;
+
+				    if (identifier.compare("%s") == 0)
+				    {
+					    std::string outputString = PowerPC::Read_String(readAddress, numBytes);
+
+					    finalOutput = StringFromFormat(identifier.c_str(), outputString.c_str());
+				    }
+				    else if (identifier.compare("%f") == 0)
+				    {
+					    float outputFloat = PowerPC::HostRead_F32(readAddress);
+					    finalOutput = StringFromFormat(identifier.c_str(), outputFloat);
+				    }
+				    else if (numBytes == 4)
+				    {
+					    u32 output4Bytes = PowerPC::HostRead_U32(readAddress);
+					    finalOutput = StringFromFormat(identifier.c_str(), output4Bytes);
+				    }
+				    else if (numBytes == 2)
+				    {
+					    u16 output2Bytes = PowerPC::HostRead_U16(readAddress);
+
+					    // Special Formatting for 2 Byte
+					    if (currHint.compare("Degrees") == 0)
+					    {
+						    double degrees = output2Bytes;
+						    degrees = (degrees / 182.04) + 0.5;
+
+						    int finalDegrees = (int)degrees;
+
+						    if (finalDegrees >= 360)
+							    finalDegrees = finalDegrees - 360;
+
+						    std::string newIdentifier = identifier;
+						    newIdentifier.append(" (%i DEG)");
+
+						    finalOutput = StringFromFormat(newIdentifier.c_str(), output2Bytes, finalDegrees);
+					    }
+					    else if (currHint.compare("seconds") == 0)
+					    {
+						    // ToD
+						    int time = output2Bytes;
+						    int seconds = (time / 60) % 60;
+
+						    float miliseconds = (float)time / 60;
+						    miliseconds = (miliseconds - seconds) * 999;
+
+						    int finalMinutes = (int)miliseconds;
+
+						    std::stringstream ss;
+
+						    ss << finalMinutes;
+						    std::string minutesString = ss.str();
+
+						    if (finalMinutes < 10)
+							    minutesString = "0" + minutesString;
+
+						    std::string newIdentifier = identifier;
+						    newIdentifier.append(".%s");
+
+						    finalOutput = StringFromFormat(newIdentifier.c_str(), seconds, minutesString.c_str());
+					    }
+					    else if (currHint.compare("minutes") == 0)
+					    {
+						    // ToD
+						    int time = output2Bytes;
+						    int hours = (time / (60 * 60 * 60));
+						    int minutes = (time / (60 * 60)) % 60;
+
+						    int finalMinutes = (int)minutes;
+
+						    std::stringstream ss;
+
+						    ss << finalMinutes;
+						    std::string minutesString = ss.str();
+
+						    if (finalMinutes < 10)
+							    minutesString = "0" + minutesString;
+
+						    std::string newIdentifier = identifier;
+						    newIdentifier.append(":%s");
+
+						    finalOutput = StringFromFormat(newIdentifier.c_str(), hours, minutesString.c_str());
+					    }
+					    else
+					    {
+						    finalOutput = StringFromFormat(identifier.c_str(), output2Bytes);
+					    }
+				    }
+				    else if (numBytes == 1)
+				    {
+					    u8 output1Byte = PowerPC::HostRead_U8(readAddress);
+					    finalOutput = StringFromFormat(identifier.c_str(), output1Byte);
+				    }
+
+				    if (finalOutput.length() == 0)
+				    {
+					    finalOutput = "N/A";
+				    }
+				    else
+				    {
+					    if (locHint == std::string::npos)
+					    {
+						    if (identifier.compare("%X") == 0 || identifier.compare("%x") == 0)
+						    {
+							    if (finalOutput.length() < 2)
+							    {
+								    finalOutput = "0" + finalOutput;
+							    }
+						    }
+					    }
+				    }
+
+				    std::string completeOutput =
+				        StringFromFormat("%s%s", currSectionOutput.c_str(), finalOutput.c_str());
+
+				    RAMDisplay.append(completeOutput);
+
+				    locNext = subLine.find("%", 0);
+			    }
+
+			    RAMDisplay.append("\n");
+		    }
+	    }
+
+		return RAMDisplay;
+	}
 
 // NOTE: GPU Thread
 std::string GetRTCDisplay()
@@ -1395,11 +1649,14 @@ void SetWiiInputManip(WiiManipFunction func)
   s_wii_manip_func = std::move(func);
 }
 
+
 // NOTE: CPU Thread
 void CallGCInputManip(GCPadStatus* PadStatus, int controllerID)
 {
   if (s_gc_manip_func)
     s_gc_manip_func(PadStatus, controllerID);
+
+  
 }
 // NOTE: CPU Thread
 void CallWiiInputManip(DataReportBuilder& rpt, int controllerID, int ext, const EncryptionKey& key)
