@@ -36,6 +36,8 @@
 #include "Common/Timer.h"
 #include "Common/Version.h"
 
+#include "Core/LUA/Lua.h"
+
 #include "Core/Boot/Boot.h"
 #include "Core/BootManager.h"
 #include "Core/ConfigManager.h"
@@ -85,6 +87,7 @@
 #include "VideoCommon/OnScreenDisplay.h"
 #include "VideoCommon/RenderBase.h"
 #include "VideoCommon/VideoBackendBase.h"
+#include "VideoCommon/Statistics.h"
 
 #ifdef ANDROID
 #include "jni/AndroidCommon/IDCache.h"
@@ -290,6 +293,7 @@ void Stop()  // - Hammertime!
 
   // Stop the CPU
   INFO_LOG_FMT(CONSOLE, "{}", StopMessage(true, "Stop CPU"));
+  Statistics::ClearLuaText(); // Clear Lua text so we don't have to do this manually
   CPU::Stop();
 
   if (_CoreParameter.bCPUThread)
@@ -530,6 +534,8 @@ static void EmuThread(std::unique_ptr<BootParameters> boot, WindowSystemInfo wsi
   AudioCommon::InitSoundStream();
   Common::ScopeGuard audio_guard{&AudioCommon::ShutdownSoundStream};
 
+  Lua::Init();
+
   HW::Init();
 
   Common::ScopeGuard hw_guard{[] {
@@ -547,6 +553,7 @@ static void EmuThread(std::unique_ptr<BootParameters> boot, WindowSystemInfo wsi
     BootManager::RestoreConfig();
 
     PatchEngine::Shutdown();
+    Lua::Shutdown();
     HLE::Clear();
     PowerPC::debug_interface.Clear();
   }};
