@@ -84,6 +84,7 @@ signals:
 
   // Tools
   void ShowMemcardManager();
+  void ShowLuaScriptWindow();
   void BootGameCubeIPL(DiscIO::Region region);
   void ShowFIFOPlayer();
   void ShowAboutDialog();

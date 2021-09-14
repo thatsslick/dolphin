@@ -85,6 +85,7 @@
 #include "DolphinQt/GameList/GameList.h"
 #include "DolphinQt/Host.h"
 #include "DolphinQt/HotkeyScheduler.h"
+#include "DolphinQt/LuaScriptWindow.h"
 #include "DolphinQt/MainWindow.h"
 #include "DolphinQt/MenuBar.h"
 #include "DolphinQt/NKitWarningDialog.h"
@@ -504,6 +505,7 @@ void MainWindow::ConnectMenuBar()
 
   // Tools
   connect(m_menu_bar, &MenuBar::ShowMemcardManager, this, &MainWindow::ShowMemcardManager);
+  connect(m_menu_bar, &MenuBar::ShowLuaScriptWindow, this, &MainWindow::ShowLuaScriptWindow);
   connect(m_menu_bar, &MenuBar::ShowResourcePackManager, this,
           &MainWindow::ShowResourcePackManager);
   connect(m_menu_bar, &MenuBar::ShowCheatsManager, this, &MainWindow::ShowCheatsManager);
@@ -1786,6 +1788,13 @@ void MainWindow::ShowMemcardManager()
   GCMemcardManager manager(this);
 
   manager.exec();
+}
+
+void MainWindow::ShowLuaScriptWindow()
+{
+  LuaScriptWindow scriptWindow(this);
+
+  scriptWindow.exec();
 }
 
 void MainWindow::ShowResourcePackManager()

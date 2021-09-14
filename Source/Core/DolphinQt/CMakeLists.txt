@@ -242,6 +242,8 @@ add_executable(dolphin-emu
   GCMemcardCreateNewDialog.h
   GCMemcardManager.cpp
   GCMemcardManager.h
+  LuaScriptWindow.cpp
+  LuaScriptWindow.h
   QtUtils/BlockUserInputFilter.cpp
   QtUtils/BlockUserInputFilter.h
   NetPlay/ChunkedProgressDialog.cpp
