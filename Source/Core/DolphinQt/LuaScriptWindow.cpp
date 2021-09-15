@@ -30,7 +30,6 @@
 #include <QToolButton>
 
 #include "Common/Assert.h"
-#include "Common/CommonPaths.h"
 #include "Common/Config/Config.h"
 #include "Common/FileUtil.h"
 #include "Common/MsgHandler.h"
@@ -48,9 +47,6 @@ LuaScriptWindow::LuaScriptWindow(QWidget* parent) : QDialog(parent)
 
   // Set window dimensions
   resize(200, 100);
-
-  // Allow window to go out-of-focus
-  setModal(false);
 
   setWindowTitle(tr("Execute Lua Script"));
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -110,7 +106,7 @@ QStringList LuaScriptWindow::GetScriptList()
 {
   QStringList scripts;
   // Look in /Sys/Scripts for script files
-  std::string scriptsFolder = File::GetSysDirectory() + SCRIPTS_SYS_DIR;
+  std::string scriptsFolder = File::GetSysDirectory() + "Scripts";
   if (!File::Exists(scriptsFolder))
   {
     return scripts;
@@ -132,7 +128,23 @@ QStringList LuaScriptWindow::GetScriptList()
       continue;
     }
 
-    scripts.append(QString::fromStdString(child.virtualName));
+    const QString filename = QString::fromStdString(child.virtualName);
+
+    // Assert that this is a .lua file
+    QString suffix = QFileInfo(filename).suffix();
+
+    if (suffix != tr("lua"))
+    {
+      continue;
+    }
+
+    // Ignore scripts with "_" prefix, as these are autorun
+    if (filename.left(1) == tr("_"))
+    {
+      continue;
+    }
+
+    scripts.append(filename);
   }
 
   return scripts;
