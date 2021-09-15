@@ -30,7 +30,6 @@
 #include <QToolButton>
 
 #include "Common/Assert.h"
-#include "Common/CommonPaths.h"
 #include "Common/Config/Config.h"
 #include "Common/FileUtil.h"
 #include "Common/MsgHandler.h"
@@ -103,7 +102,7 @@ QStringList LuaScriptWindow::GetScriptList()
 {
   QStringList scripts;
   // Look in /Sys/Scripts for script files
-  std::string scriptsFolder = File::GetSysDirectory() + SCRIPTS_SYS_DIR;
+  std::string scriptsFolder = File::GetSysDirectory() + "Scripts";
   if (!File::Exists(scriptsFolder))
   {
     return scripts;
@@ -131,6 +130,12 @@ QStringList LuaScriptWindow::GetScriptList()
     QString suffix = QFileInfo(filename).suffix();
 
     if (suffix != tr("lua"))
+    {
+      continue;
+    }
+
+    // Ignore scripts with "_" prefix, as these are autorun
+    if (filename.left(1) == tr("_"))
     {
       continue;
     }
