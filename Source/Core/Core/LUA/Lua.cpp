@@ -5,10 +5,9 @@
 // Contributions by luckytyphlosion are
 // licensed under GPLv2+
 
+#include "Core/LUA/Lua.h"
+
 #include <mbedtls/md5.h>
-#include <lua.hpp>
-#include <lua.h>
-#include <luaconf.h>
 #include <string>
 
 #include "Common/ChunkFile.h"
@@ -24,11 +23,9 @@
 #include "Common/FileUtil.h"
 #include "Common/StringUtil.h"
 #include "Core/Movie.h"
-#include "Core/LUA/Lua.h"
 #include "Core/NetPlayProto.h"
 #include "Core/State.h"
 #include "Core/DSP/DSPCore.h"
-#include "Common/FileUtil.cpp"
 #include "Core/HW/Memmap.h"
 #include "Core/HW/DVD/DVDInterface.h"
 #include "Core/HW/EXI/EXI_Device.h"
@@ -46,9 +43,6 @@
 #include "VideoCommon/VideoConfig.h"
 #include "Core/Host.h"
 #include "Core/PowerPC/MMU.h"
-
-//#include "DolphinWX/Main.h"
-//#include "DolphinWX/Frame.h"
 
 //Lua Functions (C)
 int ReadValue8(lua_State* L)
@@ -307,6 +301,19 @@ int GetGameID(lua_State* L)
 
 int GetScriptsDir(lua_State* L)
 {
+
+#if defined(_WIN32) || defined(LINUX_LOCAL_DEV)
+#define SYSDATA_DIR "Sys"
+#elif defined __APPLE__
+#define SYSDATA_DIR "Contents/Resources/Sys"
+#else
+#ifdef DATA_DIR
+#define SYSDATA_DIR DATA_DIR "sys"
+#else
+#define SYSDATA_DIR "sys"
+#endif
+#endif
+
 	lua_pushstring(L, (SYSDATA_DIR "/Scripts/"));
 	return 1;
 }
@@ -474,7 +481,7 @@ int LoadState(lua_State* L)
 
 int GetFrameCount(lua_State* L)
 {
-	int argc = lua_gettop(L);
+	lua_gettop(L);
 
 	lua_pushinteger(L, Movie::GetCurrentFrame()); // return value
 	return 1; // number of return values
@@ -482,7 +489,7 @@ int GetFrameCount(lua_State* L)
 
 int GetInputFrameCount(lua_State* L)
 {
-	int argc = lua_gettop(L);
+	lua_gettop(L);
 
 	lua_pushinteger(L, Movie::GetCurrentInputCount() + 1); // return value
 	return 1; // number of return values
@@ -507,7 +514,7 @@ int SetScreenText(lua_State* L)
 
 int PauseEmulation(lua_State* L)
 {
-	int argc = lua_gettop(L);
+	lua_gettop(L);
 
 	Core::SetState(Core::State::Paused);
 
@@ -516,7 +523,7 @@ int PauseEmulation(lua_State* L)
 
 int SetInfoDisplay(lua_State* L)
 {
-	int argc = lua_gettop(L);	
+	lua_gettop(L);	
 	SConfig::GetInstance().m_ShowRAMDisplay = !SConfig::GetInstance().m_ShowRAMDisplay;	
 	SConfig::GetInstance().SaveSettings();
 	return 0;
@@ -524,7 +531,7 @@ int SetInfoDisplay(lua_State* L)
 
 int SetFrameAndAudioDump(lua_State* L)
 {
-	int argc = lua_gettop(L);
+	lua_gettop(L);
 
 	bool enableDump = (lua_toboolean(L, 1) != 0);
 	SConfig::GetInstance().m_DumpFrames = enableDump;
@@ -561,7 +568,7 @@ int MsgBox(lua_State* L)
 
 int CancelScript(lua_State* L)
 {
-	int argc = lua_gettop(L);
+	lua_gettop(L);
 
 	Lua::iCancelCurrentScript();
 

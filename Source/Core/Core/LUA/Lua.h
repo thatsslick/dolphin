@@ -92,4 +92,4 @@ namespace Lua
 	void iSaveState(bool toSlot, int slotID, std::string fileName);
 	void iLoadState(bool fromSlot, int slotID, std::string fileName);
 	void iCancelCurrentScript();
-}
+} // namespace Lua
