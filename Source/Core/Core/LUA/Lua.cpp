@@ -47,8 +47,6 @@
 #include "Core/Host.h"
 #include "Core/PowerPC/MMU.h"
 
-//#include "DolphinWX/Main.h"
-//#include "DolphinWX/Frame.h"
 
 //Lua Functions (C)
 int ReadValue8(lua_State* L)
