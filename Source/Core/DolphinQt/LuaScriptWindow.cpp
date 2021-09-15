@@ -39,6 +39,8 @@
 
 #include "DolphinQt/QtUtils/ModalMessageBox.h"
 
+#include "Core/LUA/Lua.h"
+
 LuaScriptWindow::LuaScriptWindow(QWidget* parent) : QDialog(parent)
 {
   CreateWidgets();
@@ -96,10 +98,12 @@ void LuaScriptWindow::ExecuteScript()
   ModalMessageBox::warning(
       this, tr("Woah!! Cool."),
       tr("If you see this, then I somehow got the GUI set up.\nThis is an example of how we would pass in "));
+      Lua::LoadScript(m_script_dropdown->currentText().toStdString());
 }
 
 void LuaScriptWindow::CancelScript()
 {
+      Lua::TerminateScript(m_script_dropdown->currentText().toStdString());
 }
 
 QStringList LuaScriptWindow::GetScriptList()
