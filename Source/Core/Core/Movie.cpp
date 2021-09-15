@@ -43,6 +43,7 @@
 #include "Core/LUA/Lua.h"
 #include "Core/DSP/DSPCore.h"
 #include "Core/HW/CPU.h"
+#include "Core/HW/Memmap.h"
 #include "Core/HW/DVD/DVDInterface.h"
 #include "Core/HW/EXI/EXI_DeviceIPL.h"
 #include "Core/HW/EXI/EXI_DeviceMemoryCard.h"
@@ -325,17 +326,17 @@ std::string GetInputDisplay()
 				    }
 				    else if (identifier.compare("%f") == 0)
 				    {
-					    float outputFloat = PowerPC::HostRead_F32(readAddress);
+					    float outputFloat = Memory::Read_F32(readAddress);
 					    finalOutput = StringFromFormat(identifier.c_str(), outputFloat);
 				    }
 				    else if (numBytes == 4)
 				    {
-					    u32 output4Bytes = PowerPC::HostRead_U32(readAddress);
+					    u32 output4Bytes = Memory::Read_U32(readAddress);
 					    finalOutput = StringFromFormat(identifier.c_str(), output4Bytes);
 				    }
 				    else if (numBytes == 2)
 				    {
-					    u16 output2Bytes = PowerPC::HostRead_U16(readAddress);
+					    u16 output2Bytes = Memory::Read_U16(readAddress);
 
 					    // Special Formatting for 2 Byte
 					    if (currHint.compare("Degrees") == 0)
@@ -406,7 +407,7 @@ std::string GetInputDisplay()
 				    }
 				    else if (numBytes == 1)
 				    {
-					    u8 output1Byte = PowerPC::HostRead_U8(readAddress);
+					    u8 output1Byte = Memory::Read_U8(readAddress);
 					    finalOutput = StringFromFormat(identifier.c_str(), output1Byte);
 				    }
 
