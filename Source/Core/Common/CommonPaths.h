@@ -136,4 +136,3 @@
 // Subdirs in Sys
 #define GC_SYS_DIR "GC"
 #define WII_SYS_DIR "Wii"
-#define SCRIPTS_SYS_DIR "Scripts"

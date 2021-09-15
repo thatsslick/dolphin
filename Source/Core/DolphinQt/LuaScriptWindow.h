@@ -12,6 +12,7 @@
 #include <QDialog>
 
 #include "Common/CommonTypes.h"
+#include "Core/LUA/Lua.h"
 
 class QAction;
 class QComboBox;

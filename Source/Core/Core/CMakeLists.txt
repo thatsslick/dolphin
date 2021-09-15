@@ -404,6 +404,8 @@ add_library(core
   IOS/WFS/WFSSRV.h
   LibusbUtils.cpp
   LibusbUtils.h
+  LUA/Lua.cpp
+  LUA/Lua.h
   MemTools.cpp
   MemTools.h
   Movie.cpp
