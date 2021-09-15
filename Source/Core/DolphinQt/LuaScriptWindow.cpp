@@ -46,7 +46,7 @@ LuaScriptWindow::LuaScriptWindow(QWidget* parent) : QDialog(parent)
   ConnectWidgets();
 
   // Set window dimensions
-  resize(200, 100);
+  setFixedSize(QSize(300, 110));
 
   setWindowTitle(tr("Execute Lua Script"));
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -66,6 +66,7 @@ void LuaScriptWindow::CreateWidgets()
   m_script_dropdown->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
   QStringList scripts = GetScriptList();
   m_script_dropdown->addItems(scripts);
+  m_script_dropdown->setMaximumWidth(300);
 
 
   auto* layout = new QGridLayout;
