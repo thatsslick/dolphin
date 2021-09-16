@@ -320,23 +320,44 @@ std::string GetInputDisplay()
 
 				    if (identifier.compare("%s") == 0)
 				    {
-					    std::string outputString = PowerPC::Read_String(readAddress, numBytes);
+                                            std::string outputString = PowerPC::Read_String(readAddress, numBytes);
+                                            /*
+					    std::string outputString = "";
+                                            
+                                            PowerPC::TryReadResult<std::string> result = HostTryReadString(readAddress + 0x80000000, numBytes, PowerPC::RequestedAddressSpace::Virtual);
+                                            if (result)
+                                                outputString = result.value;
+                                                */
 
 					    finalOutput = StringFromFormat(identifier.c_str(), outputString.c_str());
 				    }
 				    else if (identifier.compare("%f") == 0)
 				    {
-					    float outputFloat = Memory::Read_F32(readAddress);
+					    float outputFloat = 0;
+
+                                            PowerPC::TryReadResult<float> result = HostTryReadF32(readAddress + 0x80000000, PowerPC::RequestedAddressSpace::Virtual);
+                                            if (result)
+                                                outputFloat = result.value;
+
 					    finalOutput = StringFromFormat(identifier.c_str(), outputFloat);
 				    }
 				    else if (numBytes == 4)
 				    {
-					    u32 output4Bytes = Memory::Read_U32(readAddress);
+					    u32 output4Bytes = 0;
+
+                                            PowerPC::TryReadResult<u32> result = HostTryReadU32(readAddress + 0x80000000, PowerPC::RequestedAddressSpace::Virtual);
+                                            if (result)
+                                                output4Bytes = result.value;
+
 					    finalOutput = StringFromFormat(identifier.c_str(), output4Bytes);
 				    }
 				    else if (numBytes == 2)
 				    {
-					    u16 output2Bytes = Memory::Read_U16(readAddress);
+					    u16 output2Bytes = 0;
+
+                                            PowerPC::TryReadResult<u16> result = HostTryReadU16(readAddress + 0x80000000, PowerPC::RequestedAddressSpace::Virtual);
+                                            if (result)
+                                                output2Bytes = result.value;
 
 					    // Special Formatting for 2 Byte
 					    if (currHint.compare("Degrees") == 0)
@@ -407,7 +428,12 @@ std::string GetInputDisplay()
 				    }
 				    else if (numBytes == 1)
 				    {
-					    u8 output1Byte = Memory::Read_U8(readAddress);
+					    u8 output1Byte = 0;
+
+                                            PowerPC::TryReadResult<u8> result = HostTryReadU8(readAddress + 0x80000000, PowerPC::RequestedAddressSpace::Virtual);
+                                            if (result)
+                                                output1Byte = result.value;
+
 					    finalOutput = StringFromFormat(identifier.c_str(), output1Byte);
 				    }
 
