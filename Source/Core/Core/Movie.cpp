@@ -285,7 +285,7 @@ std::string GetInputDisplay()
 					    u32 pointerAddress;
 					    u32 offset = 0;
 
-					    pointerAddress = strtol(argString.substr(0, locPlus - 1).c_str(), nullptr, 16);
+					    pointerAddress = strtoul(argString.substr(0, locPlus - 1).c_str(), nullptr, 16);
 
 						std::string arguString = argString.substr(locPlus + 2);
 
