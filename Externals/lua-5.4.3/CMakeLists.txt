@@ -15,7 +15,7 @@ add_library (lua STATIC
 	src/liolib.c
 	src/llex.c 
 	src/lmem.c 
-	src/lloadlib.c
+	src/loadlib.c
 	src/lobject.c 
 	src/lopcodes.c
     src/loslib.c	
